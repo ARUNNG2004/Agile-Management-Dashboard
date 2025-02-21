@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agile Project Management Dashboard</title>
+    
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7fc;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(to right, #1e3c72, #2a5298); /* Gradient for premium look */
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        /* Main Container */
+        .container {
+            width: 85%;
+            margin: 30px auto;
+            text-align: center;
+        }
+
+        /* Heading Box */
+        .heading-box {
+            background: #ffffff;
+            padding: 12px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+            width: 60%;
+            margin: 20px auto;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            border-left: 6px solid #2a5298; /* Subtle left border for emphasis */
+            color: #333;
+        }
+
+        /* Charts Section */
+        .charts {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        /* Chart Container */
+        .chart-container {
+            background: #ffffff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.1);
+            width: 42%;  /* Adjusted for a cleaner side-by-side layout */
+            max-width: 450px;
+        }
+
+        .chart-container img {
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="header">
+        Agile Project Management Dashboard
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        
+        <!-- Heading Box -->
+        <div class="heading-box">
+            Project Performance Analytics
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts">
+            <div class="chart-container">
+                <img src="{{ url_for('static', filename='burnup_chart.png') }}" alt="Burn-Up Chart">
+            </div>
+            <div class="chart-container">
+                <img src="{{ url_for('static', filename='burndown_chart.png') }}" alt="Burndown Chart">
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>
