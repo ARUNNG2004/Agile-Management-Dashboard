@@ -1,56 +1,65 @@
+from flask import Flask, render_template
 import os
-import sys
-import unittest
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from main import app, generate_burnup_chart, generate_burndown_chart
+import datetime
+import matplotlib.pyplot as plt
 
+app = Flask(__name__, template_folder="app/templates", static_folder="app/static")
 
-class TestFlaskBurnCharts(unittest.TestCase):
+if not os.path.exists("app/static"):
+    os.makedirs("app/static")
 
-    def setUp(self):
-        print("\nSetting up test client...")
-        self.app = app.test_client()
-        self.app.testing = True
+sprint_start_date = datetime.date.today()
+days = [sprint_start_date + datetime.timedelta(days=i) for i in range(10)]
+formatted_dates = [day.strftime("%b %d") for day in days]
 
-    def test_app_running(self):
-        print("Running test: test_app_running")
-        response = self.app.get('/')
-        self.assertEqual(response.status_code, 200)
-        print("✔ Flask app is running successfully.")
+def generate_burnup_chart():
+    completed_work = [2, 5, 8, 12, 15, 19, 22, 27, 30, 35]
+    total_scope = [35] * len(days)
 
-    def test_generate_burnup_chart(self):
-        print("Running test: test_generate_burnup_chart")
-        burnup_path = generate_burnup_chart()  
-        self.assertTrue(os.path.exists(burnup_path))
-        print("Burnup chart generated successfully at:", burnup_path)
+    plt.figure(figsize=(8, 8))
+    plt.plot(formatted_dates, completed_work, marker='o', linestyle='-', color='g', label="Completed Story Points")
+    plt.plot(formatted_dates, total_scope, linestyle='--', color='r', label="Total Scope")
 
-    def test_generate_burndown_chart(self):
-        print("Running test: test_generate_burndown_chart")
-        burndown_path = generate_burndown_chart() 
-        self.assertTrue(os.path.exists(burndown_path))
-        print("Burndown chart generated successfully at:", burndown_path)
+    plt.xlabel("Sprint Timeline")
+    plt.ylabel("Story Points Completed")
+    plt.title("Sprint Burnup Chart")
+    plt.xticks(rotation=45, fontsize=10)
+    plt.yticks(fontsize=10)
+    plt.grid(True)
+    plt.legend(loc="upper left", bbox_to_anchor=(1, 1))
 
+    burnup_path = os.path.join("app/static", "burnup_chart.png")
+    plt.savefig(burnup_path, bbox_inches="tight")
+    plt.close()
 
-    def test_index_route(self):
-        print("Running test: test_index_route")
-        response = self.app.get('/')
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(b"burnup_chart.png" in response.data)
-        self.assertTrue(b"burndown_chart.png" in response.data)
-        print("✔ Index page loaded correctly with charts.")
+    return burnup_path  
 
-    def tearDown(self):
-        print("\nCleaning up generated chart files...")
-        burnup_path = os.path.join("app", "static", "burnup_chart.png")
-        burndown_path = os.path.join("app", "static", "burndown_chart.png")
+def generate_burndown_chart():
+    remaining_work = [35, 30, 27, 24, 20, 18, 14, 10, 5, 0]
+    plt.figure(figsize=(8, 8))
+    plt.plot(formatted_dates, remaining_work, marker='o', linestyle='-', color='b', label="Remaining Story Points")
 
-        if os.path.exists(burnup_path):
-            os.remove(burnup_path)
-            print("✔ Removed:", burnup_path)
+    plt.xlabel("Sprint Timeline")
+    plt.ylabel("Story Points Remaining")
+    plt.title("Sprint Burndown Chart")
+    plt.xticks(rotation=45, fontsize=10)
+    plt.yticks(fontsize=10)
+    plt.grid(True)
+    plt.legend(loc="upper left", bbox_to_anchor=(1, 1))
 
-        if os.path.exists(burndown_path):
-            os.remove(burndown_path)
-            print("✔ Removed:", burndown_path)
+    burndown_path = os.path.join("app/static", "burndown_chart.png")
+    plt.savefig(burndown_path, bbox_inches="tight")
+    plt.close()
+
+    return burndown_path
+
+@app.route("/")
+def index():
+    burnup_chart = "static/burnup_chart.png"
+    burndown_chart = "static/burndown_chart.png"
+    return render_template("index.html", burnup_chart=burnup_chart, burndown_chart=burndown_chart)
 
 if __name__ == "__main__":
-    unittest.main()
+    generate_burnup_chart()  
+    generate_burndown_chart()
+    app.run(debug=True)
