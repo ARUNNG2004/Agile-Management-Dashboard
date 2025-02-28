@@ -89,6 +89,22 @@
             Project Performance Analytics
         </div>
 
+        <h1>Burnup & Burndown Charts</h1>
+
+    <form action="/update" method="POST">
+        <label for="day">Day (1-10):</label>
+        <input type="number" id="day" name="day" min="1" max="10" required>
+
+        <label for="completed_work">Completed Work:</label>
+        <input type="number" id="completed_work" name="completed_work" required>
+
+        <label for="remaining_work">Remaining Work:</label>
+        <input type="number" id="remaining_work" name="remaining_work" required>
+
+        <button type="submit">Update Data</button>
+    </form>
+
+    <h2>Charts</h2>
         <!-- Charts Section -->
         <div class="charts">
             <div class="chart-container">
