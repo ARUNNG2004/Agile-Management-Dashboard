@@ -84,6 +84,33 @@ def generate_burndown_chart():
 
     return burndown_path
 
+@app.route("/update", methods=["POST"])
+def update_data():
+    day = int(request.form["day"])
+    completed_work = int(request.form["completed_work"])
+    remaining_work = int(request.form["remaining_work"])
+
+    conn = sqlite3.connect("users.db")
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM sprint_progress WHERE day = ?", (day,))
+    existing = cursor.fetchone()
+
+    if existing:
+        cursor.execute("UPDATE sprint_progress SET completed_work = ?, remaining_work = ? WHERE day = ?",
+                       (completed_work, remaining_work, day))
+    else:
+        cursor.execute("INSERT INTO sprint_progress (day, completed_work, remaining_work) VALUES (?, ?, ?)",
+                       (day, completed_work, remaining_work))
+
+    conn.commit()
+    conn.close()
+
+    generate_burnup_chart()
+    generate_burndown_chart()
+
+    return redirect(url_for("index"))
+
 @app.route("/")
 def index():
     burnup_chart = "static/burnup_chart.png"
