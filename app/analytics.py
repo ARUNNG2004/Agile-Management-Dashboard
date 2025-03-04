@@ -1,8 +1,8 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect, url_for
 import os
 import datetime
 import matplotlib.pyplot as plt
-import sqlite3  
+import sqlite3
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
 
@@ -16,7 +16,7 @@ formatted_dates = [day.strftime("%b %d") for day in days]
 def init_db():
     conn = sqlite3.connect("users.db")
     cursor = conn.cursor()
-    
+
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS sprint_progress (
         day INTEGER PRIMARY KEY,
@@ -25,32 +25,21 @@ def init_db():
     )
     ''')
 
-    cursor.execute("SELECT COUNT(*) FROM sprint_progress")
-    count = cursor.fetchone()[0]
-
-    if count == 0:
-        dummy_data = [
-            (1, 2, 35), (2, 5, 30), (3, 8, 27),
-            (4, 12, 24), (5, 15, 20), (6, 19, 18),
-            (7, 22, 14), (8, 27, 10), (9, 30, 5), (10, 35, 0)
-        ]
-        cursor.executemany("INSERT INTO sprint_progress (day, completed_work, remaining_work) VALUES (?, ?, ?)", dummy_data)
-        conn.commit()
-
+    conn.commit()
     conn.close()
 
 def fetch_sprint_data():
     conn = sqlite3.connect("users.db")
     cursor = conn.cursor()
-    
+
     cursor.execute("SELECT completed_work, remaining_work FROM sprint_progress ORDER BY day ASC")
     data = cursor.fetchall()
-    
+
     conn.close()
-    
+
     completed_work = [row[0] for row in data]
     remaining_work = [row[1] for row in data]
-    
+
     return completed_work, remaining_work
 
 def generate_burnup_chart():
@@ -73,7 +62,7 @@ def generate_burnup_chart():
     plt.savefig(burnup_path, bbox_inches="tight")
     plt.close()
 
-    return burnup_path  
+    return burnup_path
 
 def generate_burndown_chart():
     _, remaining_work = fetch_sprint_data()
@@ -95,33 +84,6 @@ def generate_burndown_chart():
 
     return burndown_path
 
-@app.route("/update", methods=["POST"])
-def update_data():
-    day = int(request.form["day"])
-    completed_work = int(request.form["completed_work"])
-    remaining_work = int(request.form["remaining_work"])
-
-    conn = sqlite3.connect("users.db")
-    cursor = conn.cursor()
-
-    cursor.execute("SELECT * FROM sprint_progress WHERE day = ?", (day,))
-    existing = cursor.fetchone()
-
-    if existing:
-        cursor.execute("UPDATE sprint_progress SET completed_work = ?, remaining_work = ? WHERE day = ?", 
-                       (completed_work, remaining_work, day))
-    else:
-        cursor.execute("INSERT INTO sprint_progress (day, completed_work, remaining_work) VALUES (?, ?, ?)", 
-                       (day, completed_work, remaining_work))
-
-    conn.commit()
-    conn.close()
-
-    generate_burnup_chart()
-    generate_burndown_chart()
-
-    return redirect(url_for("index"))
-
 @app.route("/")
 def index():
     burnup_chart = "static/burnup_chart.png"
@@ -129,7 +91,7 @@ def index():
     return render_template("index.html", burnup_chart=burnup_chart, burndown_chart=burndown_chart)
 
 if __name__ == "__main__":
-    init_db()  
-    generate_burnup_chart()  
+    init_db()
+    generate_burnup_chart()
     generate_burndown_chart()
     app.run(debug=True)
