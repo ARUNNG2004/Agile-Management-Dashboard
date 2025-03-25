@@ -1,0 +1,246 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    padding: 20px;
+    background-color: whitesmoke;
+    color: #231b1b;
+}
+
+h1 {
+    color: #00bcd4;
+    margin-bottom: 30px;
+}
+
+h3 {
+    color: #00bcd4;
+    margin-bottom: 20px;
+}
+
+.card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    padding: 15px;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.table {
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.table th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.table td, .table th {
+    padding: 12px;
+    vertical-align: middle;
+}
+
+.badge {
+    padding: 8px 12px;
+    font-size: 12px;
+    border-radius: 4px;
+}
+
+.btn {
+    margin: 2px;
+    padding: 5px 10px;
+    font-size: 14px;
+}
+
+canvas {
+    max-width: 100%;
+    height: auto !important;
+}
+
+/* Chart container styles */
+.chart-container {
+    position: relative;
+    margin: auto;
+    height: 300px;
+}
+
+/* Responsive styles */
+@media screen and (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+
+    .card {
+        margin-bottom: 15px;
+    }
+
+    .table {
+        font-size: 14px;
+    }
+
+    .btn {
+        padding: 4px 8px;
+        font-size: 12px;
+    }
+}
+
+.view-summary-button {
+    display: block; /* Change to block to allow centering */
+    margin: 20px auto; /* Center the button */
+    padding: 15px 30px; /* Increase padding for a larger button */
+    background-color: #0056b3; /* Darker blue for a professional look */
+    color: white; /* Keep text color white for contrast */
+    text-decoration: none;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 18px; /* Increase font size */
+    width: 200px; /* Set a fixed width for the button */
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+
+.view-summary-button:hover {
+    background-color: #004494; /* Darker shade on hover */
+}
+
+h2 {
+    margin-bottom: 20px;
+    color: #00bcd4;
+    text-align: center;
+}
+
+.stats p {
+    font-size: 16px;
+    margin: 5px 0;
+    color: #b0bec5;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    background-color: #1e1e1e;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+th, td {
+    border: 1px solid #00bcd4;
+    padding: 12px;
+    text-align: left;
+    color: #e0e0e0;
+}
+
+th {
+    background-color: #00bcd4;
+    color: black;
+}
+
+td {
+    background-color: #212121;
+}
+
+.charts {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.chart-container img {
+    width: 100%;
+    height: auto;
+    border-radius: 5px;
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.overview-box, .metrics-box, .user-story-box, .task-progress-box {
+    background: #ffffff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    width: 10%; /* Adjust width for two boxes in a row */
+    margin: 10px 0;
+}
+
+/* Custom styles for Agile Stats Dashboard */
+
+/* Sticky footer styles */
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin-bottom: 60px; /* Margin bottom by footer height */
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 60px; /* Set the fixed height of the footer */
+}
+
+/* Card styles */
+.card {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: box-shadow 0.3s ease-in-out;
+}
+
+.card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* Progress bar styles */
+.progress {
+    height: 30px;
+    border-radius: 15px;
+    background-color: #e9ecef;
+}
+
+.progress-bar {
+    background-color: #28a745;
+    border-radius: 15px;
+    transition: width 0.6s ease;
+}
+
+/* Table styles */
+.table th {
+    background-color: #f8f9fa;
+}
+
+/* Responsive image styles */
+.img-fluid {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Custom button hover effects */
+.btn {
+    transition: transform 0.2s ease-in-out;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+/* Custom styles for individual performance charts */
+canvas[id^="memberChart"] {
+    width: 150px !important;
+    height: 50px !important;
+}

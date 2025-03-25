@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Dashboard</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Project Dashboard</h1>
+
+        <div class="row">
+            <div class="col-md-6">
+                <canvas id="projectChart" width="400" height="400"></canvas>
+            </div>
+            <div class="col-md-6">
+                <h2>Projects List</h2>
+                <table class="table table-striped" id="projects-table">
+                    <thead>
+                        <tr>
+                            <th>Project Name</th>
+                            <th>Project Manager</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Revised End Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // Fetch project counts and update pie chart
+            $.getJSON('/project_counts', function(data) {
+                if (data.error) {
+                    console.error('Error fetching project counts:', data.error);
+                    return;
+                }
+
+                const ctx = document.getElementById('projectChart').getContext('2d');
+                const projectChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Active Projects', 'On Hold Projects', 'Ongoing Projects', 'Completed Projects'],
+                        datasets: [{
+                            label: 'Project Status',
+                            data: [data.active, data.on_hold, data.ongoing, data.completion_stats.completed],
+                            backgroundColor: ['#28a745', '#ffc107', '#17a2b8', '#6c757d'],
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                                text: 'Project Status Overview'
+                            }
+                        }
+                    }
+                });
+            });
+
+            // Fetch and display projects
+            $.getJSON('/projects', function(data) {
+                if (data.error) {
+                    console.error('Error fetching projects:', data.error);
+                    return;
+                }
+
+                $('#projects-table tbody').empty();
+                data.forEach(function(project) {
+                    const statusClass = getStatusClass(project.status);
+                    const progressBarClass = project.completion_percentage >= 75 ? 'bg-success' :
+                                          project.completion_percentage >= 50 ? 'bg-info' :
+                                          project.completion_percentage >= 25 ? 'bg-warning' : 'bg-danger';
+
+                    $('#projects-table tbody').append(`
+                        <tr>
+                            <td>
+                                ${project.project_name}
+                                <div class="progress mt-1" style="height: 5px;">
+                                    <div class="progress-bar ${progressBarClass}" role="progressbar"
+                                         style="width: ${project.completion_percentage}%"></div>
+                                </div>
+                            </td>
+                            <td>${project.project_manager}</td>
+                            <td>${project.start_date}</td>
+                            <td>${project.end_date}</td>
+                            <td>${project.revised_end_date || '-'}</td>
+                            <td><span class="badge ${statusClass}">${project.status}</span></td>
+                            <td>
+                                <a href="/project/${project.id}" class="btn btn-primary btn-sm">View Details</a>
+                               
+                            </td>
+                        </tr>
+                    `);
+                });
+            });
+
+            // Helper function for status badge colors
+            function getStatusClass(status) {
+                switch(status.toLowerCase()) {
+                    case 'active': return 'badge-success';
+                    case 'on hold': return 'badge-warning';
+                    case 'ongoing': return 'badge-info';
+                    case 'completed': return 'badge-secondary';
+                    default: return 'badge-secondary';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
