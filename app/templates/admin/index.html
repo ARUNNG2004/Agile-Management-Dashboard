@@ -1,0 +1,264 @@
+{% extends 'admin/layout.html' %}
+
+{% block head %}
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+  :root {
+    --primary: #4f46e5;
+    --primary-dark: #4338ca;
+    --secondary: #10b981;
+    --accent: #f43f5e;
+    --dark: #0f172a;
+    --light: #f8fafc;
+    --glass: rgba(248, 250, 252, 0.1);
+    --glass-border: rgba(248, 250, 252, 0.15);
+    --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
+  }
+
+  body {
+    background: var(--dark);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    padding: 2rem; 
+    width: 100%;
+  }
+
+  .admin-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -3;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(79, 70, 229, 0.15) 0%, transparent 25%),
+      radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.15) 0%, transparent 25%);
+    animation: pulse 15s ease infinite alternate;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 0.7; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.02); }
+    100% { opacity: 0.7; transform: scale(1); }
+  }
+
+  .admin-container {
+    width: 100%;
+    max-width: 900px; /* Increased from 500px */
+    background: var(--glass);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 50px;
+    box-shadow:
+      0 25px 50px -12px rgba(0, 0, 0, 0.4),
+      inset 0 4px 16px rgba(248, 250, 252, 0.1);
+    border: 1px solid var(--glass-border);
+    position: relative;
+    overflow: hidden;
+    transform-style: preserve-3d;
+    transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    margin: 2rem auto; /* Added margin for better spacing */
+  }
+
+  .admin-container:hover {
+    transform: translateY(-8px);
+    box-shadow:
+      0 35px 60px -12px rgba(0, 0, 0, 0.5),
+      inset 0 4px 20px rgba(248, 250, 252, 0.15);
+  }
+
+  .admin-header {
+    text-align: center;
+    margin-bottom: 40px;
+    position: relative;
+  }
+
+  .admin-title {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--light);
+    letter-spacing: -0.5px;
+    position: relative;
+  }
+
+  .admin-title::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 4px;
+    background: var(--gradient);
+    border-radius: 4px;
+  }
+
+  .admin-subtitle {
+    font-size: 14px;
+    color: rgba(248, 250, 252, 0.7);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-top: 15px;
+  }
+
+  .admin-form-group {
+    position: relative;
+    margin-bottom: 30px;
+  }
+
+  .admin-form-input {
+    width: 100%;
+    padding: 18px 24px;
+    background: rgba(248, 250, 252, 0.08);
+    border: 2px solid rgba(248, 250, 252, 0.1);
+    border-radius: 12px;
+    color: var(--light);
+    font-size: 15px;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+
+  .admin-form-input:focus {
+    outline: none;
+    background: rgba(248, 250, 252, 0.12);
+    border-color: rgba(248, 250, 252, 0.3);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+  }
+
+  .admin-form-label {
+    position: absolute;
+    left: 24px;
+    top: 18px;
+    color: rgba(248, 250, 252, 0.7);
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  .admin-form-input:focus + .admin-form-label,
+  .admin-form-input:not(:placeholder-shown) + .admin-form-label {
+    transform: translateY(-36px) scale(0.9);
+    color: var(--secondary);
+    background: var(--dark);
+    padding: 0 8px;
+    width: 100%;
+  }
+
+  .admin-btn {
+    width: 100%;
+    padding: 18px;
+    background: var(--gradient);
+    border: none;
+    border-radius: 12px;
+    color: var(--light);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 10px 30px -5px rgba(79, 70, 229, 0.5);
+    margin-top: 10px;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    letter-spacing: 0.5px;
+  }
+
+  .admin-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px -5px rgba(79, 70, 229, 0.6);
+  }
+
+  .admin-btn:active {
+    transform: translateY(0);
+  }
+
+  .alert {
+    padding: 16px 24px;
+    margin-bottom: 30px;
+    border-radius: 12px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+    animation: slideIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(248, 250, 252, 0.15);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  }
+
+  @keyframes slideIn {
+    from { transform: translateY(-30px) scale(0.95); opacity: 0; }
+    to { transform: translateY(0) scale(1); opacity: 1; }
+  }
+
+  .alert-success {
+    background: rgba(16, 185, 129, 0.2);
+    color: #d1fae5;
+    border-color: rgba(16, 185, 129, 0.3);
+  }
+
+  .alert-danger {
+    background: rgba(244, 63, 94, 0.2);
+    color: #ffe4e6;
+    border-color: rgba(244, 63, 94, 0.3);
+  }
+
+  @media (max-width: 768px) {
+    .admin-container {
+      padding: 40px 30px;
+      max-width: 95%;
+      margin: 1rem;
+    }
+    .admin-title {
+      font-size: 24px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-bg"></div>
+
+<div class="admin-container">
+  {% with messages=get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category,message in messages %}
+        <div class="alert alert-{{category}}">
+          <strong>{{message}}</strong>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <div class="admin-header">
+    <h1 class="admin-title">Admin Portal</h1>
+    <p class="admin-subtitle">Restricted Access</p>
+  </div>
+
+  <form action="{{ url_for('admin.adminIndex') }}" method="post">
+    <div class="admin-form-group">
+      <input type="email" name="email" class="admin-form-input" placeholder=" " required>
+      <label class="admin-form-label">Admin Email</label>
+    </div>
+
+    <div class="admin-form-group">
+      <input type="password" name="password" class="admin-form-input" placeholder=" " required>
+      <label class="admin-form-label">Password</label>
+    </div>
+
+    <button type="submit" class="admin-btn">Login</button>
+  </form>
+
+  <p class="text-center mt-3">
+    <a href="{{ url_for('auth.login') }}" class="text-light">Back to Login Page</a>
+  </p>
+</div>
+{% endblock content %}

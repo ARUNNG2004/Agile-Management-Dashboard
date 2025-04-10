@@ -1,0 +1,170 @@
+{% extends "admin/layout.html"%}
+
+{% block head %}
+<style>
+/* Alert Messages */  
+.alert {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    text-align: center;
+}
+.alert-success { background-color: #d4edda; color: #155724; }
+.alert-danger { background-color: #f8d7da; color: #721c24; }
+.alert-warning { background-color: #fff3cd; color: #856404; }
+
+/* Search Bar Styling */
+.search-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+.search-container input {
+    width: 200%; /* Increased width */
+    padding: 12px;
+    border: 2px solid #4b637b;
+    border-radius: 25px;
+    outline: none;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+.search-container input:focus {
+    border-color: #9abddd;
+    box-shadow: 0px 4px 10px rgba(26, 37, 47, 0.3);
+}
+.search-container button {
+    margin-left: 10px;
+    padding: 12px 20px;
+    border-radius: 25px;
+    border: none;
+    background-color: #2c3e50;
+    color: white;
+    font-weight: bold;
+    transition: all 0.3s ease-in-out;
+}
+.search-container button:hover {
+    background-color: #1a252f;
+}
+
+/* Table Styling */
+.table-responsive {
+    overflow-x: auto;
+    white-space: nowrap;
+}
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #cbe2f7; /* Navbar Matching Color */
+    color: rgb(29, 28, 28);
+    border-radius: 10px;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+}
+.table th {
+    background-color: #ecf0f4; /* Darker Navbar Shade */
+    color: rgb(9, 8, 8);
+    padding: 12px;
+    text-align: center;
+}
+.table td {
+    padding: 12px;
+    text-align: center;
+}
+.table tbody tr:nth-child(odd) {
+    background-color: #e9cfcf; /* Alternating rows with a navbar-like color */
+}
+.table tbody tr:hover {
+    background-color: #e4d69e; /* Hover Effect */
+    transition: all 0.3s ease-in-out;
+}
+
+/* Buttons */
+.btn {
+    border-radius: 20px;
+    padding: 8px 15px;
+    font-weight: bold;
+    transition: all 0.3s ease-in-out;
+}
+.btn-success { background-color: #28a745; color: white; }
+.btn-danger { background-color: #dc3545; color: white; }
+.btn:hover {
+    opacity: 0.85;
+}
+</style>
+{% endblock head %}
+
+{% block content %}
+<div class="container">
+    {% with messages=get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{category}}">
+        <strong>{{message}}</strong>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    {% include 'admin/navbar.html' %}
+
+    <!-- Search Bar -->
+    <div class="search-container">
+        <form action="" method="POST" class="d-flex align-items-center">
+            <input type="text" name="search" id="search" class="form-control" placeholder="Search users..." autocomplete="off">
+            <button type="submit" class="btn">Search</button>
+        </form>
+    </div>
+
+    <!-- User Management Table -->
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Full Name</th>
+                    <th>Sign-up Timestamp</th>
+                    <th>Sign-out Timestamp</th>
+                    <th>User Role</th>
+                    <th>Email</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.name }}</td>
+                    <td>{{ user.timestamp.strftime('%d-%m-%Y %H:%M:%S') }}</td>
+                    <td>
+                        {% if user.logout %}
+                        {{ user.logout.strftime('%d-%m-%Y %H:%M:%S') }}
+                        {% else %}
+                        -
+                        {% endif %}
+                    </td>
+                    <td>{{ user.role }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>
+                    {% if user.status == 1 or user.status == 3  or user.status == 4 %}
+                        <!-- Approved User -->
+                        <span class="badge bg-success">Approved</span>
+                    {% elif user.status == 2 %}
+                        <!-- Rejected User -->
+                        <span class="badge bg-danger">Rejected</span>
+            
+                    {% else %}
+                        <!-- Pending User (Status 0 or any other status) -->
+                        <a href="/admin/approve-user/{{user.id}}">
+                            <button class="btn btn-success">Approve</button>
+                        </a>
+                        <a href="/admin/reject_user/{{user.id}}">
+                            <button class="btn btn-danger">Reject</button>
+                        </a>
+                    {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock content %}

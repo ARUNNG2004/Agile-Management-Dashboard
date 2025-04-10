@@ -1,0 +1,73 @@
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+</head>
+<style>
+    /* Navigation Bar */
+    .navbar {
+        background-color: #2c3e50;
+        overflow: hidden;
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+  
+    .navbar ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+    }
+    .navbar ul li {
+        padding: 10px 15px;
+        position: relative;
+    }
+    .navbar ul li a {
+        text-decoration: none;
+        color: white;
+        font-size: 16px;
+    }
+    .navbar ul li:hover {
+        background-color: #34495e;
+        border-radius: 5px;
+    }
+    .dropdown {
+        display: none;
+        position: absolute;
+        background: white;
+        top: 35px;
+        left: 0;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        border-radius: 5px;
+        min-width: 150px;
+        z-index: 10;
+    }
+    .dropdown a {
+        display: block;
+        padding: 10px;
+        color: #2c3e50;
+    }
+    .dropdown a:hover {
+        background: #f1f1f1;
+    }
+    .navbar ul li:hover .dropdown {
+        display: block;
+    }
+</style>
+
+<!-- Navigation Bar -->
+<div class="navbar">
+    <div class="logo">Admin Dashboard</div>
+    <ul>
+        <li><a href="/admin/dashboard">Dashboard</a></li>
+        <li>
+            <a href="/admin/get-all-user">User Management</a>
+        </li>
+
+        <li><a href="/admin/change-admin-password">Change Password</a></li>
+
+        <li><a href="/admin/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+
+    </ul>
+</div>

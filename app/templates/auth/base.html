@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+    <link rel="stylesheet" href="{{url_for('static',filename='main.css')}}">
+
+    {%block head%}
+    {%endblock head%}
+    <script>
+       
+        function removeFlashMessages() {
+          const alerts = document.querySelectorAll('.alert');
+
+          alerts.forEach(function(alert) {
+            const timeout = parseInt(alert.dataset.timeout, 10) || 2000; // Default to 2 seconds
+
+            setTimeout(function() {
+              alert.style.display = 'none';
+            }, timeout);
+          });
+        }
+
+        // Function to check for and execute the function to remove flash messages
+        function checkForFlashMessages() {
+          if (document.querySelector('.alert')) {
+            removeFlashMessages();
+          }
+        }
+
+        // Add a mutation observer to watch for changes in the document body
+        const observer = new MutationObserver(checkForFlashMessages);
+
+        // Start observing the document body for added nodes
+        observer.observe(document.body, { childList: true, subtree: true });
+
+        // Call the check initially in case the flash messages are already present
+        checkForFlashMessages();
+    
+    </script>
+</head>
+<body>
+
+  
+
+    {%block content%}
+    {%endblock content%}
+
+
+</body>
+</html>

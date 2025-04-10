@@ -1,0 +1,396 @@
+{% extends 'base.html' %}
+{% block head %}
+<style>
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: linear-gradient(135deg, #f168d3, #c59feb);
+        font-family: 'Poppins', sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+    .container {
+        display: flex;
+        flex-direction: row;
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        width: 80%;
+        max-width: 900px;
+        max-height: 90vh; /* Prevent the container from being too tall */
+        overflow: hidden; /* Hide overflow */
+    }
+    .image-container {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .image-container img {
+        max-width: 100%;
+        border-radius: 10px;
+    }
+    .signup-container {
+        flex: 1;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start; /* Align content to the top */
+        max-height: 80vh; /* Set a maximum height */
+        overflow-y: auto; /* Enable vertical scrolling */
+        position: relative; /* Required for sticky positioning */
+    }
+    h2 {
+        text-align: center;
+        color: #333;
+        margin-top: 0; /* Remove default margin */
+        position: sticky; /* Make the heading sticky */
+        /* top: 0; Stick to the top of the container */
+        background: white; /* Add a background to prevent overlap */
+        /* z-index: 1; Ensure the heading stays above other content */
+        padding: 10px 0; /* Add padding for better spacing */
+    }
+    form {
+        display: flex;
+        flex-direction: column;
+    }
+    label {
+        margin-top: 10px;
+        font-weight: bold;
+    }
+
+    input, select {
+        padding: 10px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    button {
+        margin-top: 15px;
+        padding: 12px;
+        border: none;
+        background: #667eea;
+        color: white;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+    button:hover {
+        background: #764ba2;
+    }
+    .social-login {
+        text-align: center;
+        margin-top: 15px;
+    }
+    .alert {
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        text-align: center;
+    }
+    .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+    }
+    .alert-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+    .alert-warning {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+    .social-login a {
+        display: inline-block;
+        margin: 0 10px;
+    }
+    .social-login img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: transform 0.3s;
+    }
+    .social-login img:hover {
+        transform: scale(1.1);
+    }
+    p {
+        text-align: center;
+        margin-top: 10px;
+    }
+    a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: bold;
+    }
+    a:hover {
+        text-decoration: underline;
+    }
+    @media (max-width: 768px) {
+        .container {
+            flex-direction: column;
+            align-items: center;
+        }
+        .image-container {
+            margin-bottom: 20px;
+        }
+    }
+
+    /* Styles for password strength indicator */
+    .password-strength {
+        margin-top: 5px;
+        font-size: 0.8em;
+        display: none;  /* Initially hide the password strength*/
+    }
+    .password-strength span {
+        display: block;
+        padding: 5px;
+        border-radius: 5px;
+        text-align: center;
+    }
+    .weak {
+        background-color: #ffcdd2;
+        color: #b71c1c;
+    }
+    .medium {
+        background-color: #ffeb3b;
+        color: #f57f17;
+    }
+    .strong {
+        background-color: #c8e6c9;
+        color: #1b5e20;
+    }
+     /* Error message style */
+    .error-message {
+        color: red;
+        font-size: 0.8em;
+        margin-top: 5px;
+        /* display: none; Initially Hide Phone error*/
+    }
+    /* Match message style */
+    .match-message {
+        font-size: 0.8em;
+        margin-top: 5px;
+          display: none;  /*Initially Hide password match */
+    }
+    .match {
+        color: green;
+    }
+    .not-match {
+        color: red;
+    }
+
+</style>
+{% endblock head %}
+{% block content %}
+<div class="container">
+    <div class="image-container">
+        <img src="{{ url_for('static', filename='bg_agile.webp') }}" alt="Signup Image">
+    </div>
+    <div class="signup-container">
+        <h2>Create an Account</h2>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        <strong>{{ message }}</strong>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <form id="signup-form" action="{{ url_for('auth.signup') }}" method="post">
+            <label for="name">Full Name:</label>
+            <input type="text" id="name" name="name" value="{{ request.form.get('name', '') }}" required>
+            <label for="dob">Date of Birth:</label>
+            <input type="date" id="dob" name="dob" required>
+            <label for="gender">Select Gender:</label>
+            <select id="gender" name="gender">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+            </select>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" value="{{ request.form.get('email', '') }}" autocomplete="off" required>
+
+            <label for="phone">Phone Number:</label>
+            <input type="tel" id="phone" name="phone" value="{{ request.form.get('phone', '') }}" autocomplete="off" required maxlength="10">
+            <span id="phone-error" class="error-message"></span>
+
+            <label for="role">Choose a role:</label>
+            <select id="role" name="role">
+                <option value="Scrum master">Scrum master</option>
+                <option value="Product owner">Product owner</option>
+                <option value="Team member">Team member</option>
+            </select>
+
+            <label for="password">Password:</label>
+             <input type="password" id="password" name="password" value="{{ request.form.get('password', '') }}" required minlength="6">
+              <span id="password-length-error" class="error-message"></span>
+            <div class="password-strength" id="password-strength"></div>
+
+            <label for="confirm-password">Confirm Password:</label>
+             <input type="password" id="confirm-password" name="confirm-password" value="{{ request.form.get('confirm-password', '') }}" required minlength="6">
+                <span id="confirm-password-length-error" class="error-message"></span>
+            <span id="password-match" class="match-message"></span>
+
+            <label for="address">Enter Address</label>
+            <input type="text" id="address" name="address" value="{{ request.form.get('address', '') }}" required>
+            <label for="enable_2fa">
+                <input type="checkbox" name="enable_2fa" value="true"> Enable 2FA
+            </label>
+
+            <button type="submit" value="signup">Register</button>
+        </form>
+
+        <p>Already have an account? <a href="{{ url_for('auth.login') }}">Login</a></p>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const signupForm = document.getElementById('signup-form');
+        const phoneInput = document.getElementById('phone');
+        const phoneError = document.getElementById('phone-error');
+        const passwordInput = document.getElementById('password');
+        const passwordStrengthDiv = document.getElementById('password-strength');
+        const confirmPasswordInput = document.getElementById('confirm-password');
+        const passwordMatch = document.getElementById('password-match');
+
+        const passwordLengthError = document.getElementById('password-length-error');
+        const confirmPasswordLengthError = document.getElementById('confirm-password-length-error');
+
+
+        // Phone Number Validation
+        phoneInput.addEventListener('keydown', function(event) {
+            const key = event.key;
+            if (isNaN(parseInt(key)) && key !== 'Backspace' && key !== 'Delete' && key !== 'ArrowLeft' && key !== 'ArrowRight' && key !== 'Tab') {
+                event.preventDefault();
+            }
+        });
+
+        phoneInput.addEventListener('input', function() {
+            const phoneValue = phoneInput.value.trim();
+            const phoneError = document.getElementById('phone-error'); // Get reference to the phone error
+            if (!/^\d{10}$/.test(phoneValue)) {
+                phoneError.textContent = 'Phone number must be 10 digits and contain only numbers.';
+                phoneError.style.display = 'invalid phone number'; // Hide error message
+
+            } else {
+                phoneError.textContent = '';
+               phoneError.style.display = 'none'; // Hide error message
+            }
+        });
+
+        // Password Strength Checker
+         passwordInput.addEventListener('input', function() {
+            const passwordValue = passwordInput.value;
+
+
+             if (passwordValue.length < 6) {
+                 passwordStrengthDiv.style.display = 'none';
+                    passwordLengthError.textContent = "Password must be at least 6 characters long.";
+                    passwordLengthError.style.display = "block";
+
+                    return;
+              } else {
+                passwordLengthError.textContent = "";
+                 passwordLengthError.style.display = "none";
+              }
+
+            let strength = 0;
+            if (passwordValue.length >= 6) {
+                strength++;
+            }
+            if (/[a-z]/.test(passwordValue) && /[A-Z]/.test(passwordValue)) {
+                strength++;
+            }
+            if (/[0-9]/.test(passwordValue)) {
+                strength++;
+            }
+            if (/[^a-zA-Z0-9]/.test(passwordValue)) {
+                strength++;
+            }
+
+            let strengthLabel = '';
+            let strengthClass = '';
+
+            if (strength === 0) {
+                strengthLabel = '';
+                strengthClass = '';
+                 passwordStrengthDiv.style.display = 'none'; // Hide strength indicator
+                    passwordMatch.style.display = 'none'; // Hide match message
+
+            } else if (strength === 1) {
+                strengthLabel = 'Weak';
+                strengthClass = 'weak';
+                 passwordStrengthDiv.style.display = 'block'; // Show strength indicator
+                //  passwordMatch.style.display = 'block'; // Show match message
+
+            } else if (strength <= 3) {
+                strengthLabel = 'Medium';
+                strengthClass = 'medium';
+                passwordStrengthDiv.style.display = 'block'; // Show strength indicator
+                // passwordMatch.style.display = 'block'; // Show match message
+
+
+            } else {
+                strengthLabel = 'Strong';
+                strengthClass = 'strong';
+                 passwordStrengthDiv.style.display = 'block'; // Show strength indicator
+                //  passwordMatch.style.display = 'block'; // Show match message
+            }
+
+            passwordStrengthDiv.innerHTML = strengthLabel ? `<span class="${strengthClass}">${strengthLabel}</span>` : '';
+
+            // Confirm password matching on password change
+            checkPasswordMatch();
+        });
+
+        // Confirm Password Validation and Matching
+        confirmPasswordInput.addEventListener('input', function() {
+            checkPasswordMatch();
+        });
+
+        function checkPasswordMatch() {
+             const passwordValue = passwordInput.value;
+              const confirmPasswordValue = confirmPasswordInput.value;
+
+                 if (passwordValue.length < 6 || confirmPasswordValue.length < 6) {
+                       passwordMatch.style.display = 'none';
+                        return;
+
+                 }
+
+
+            if(passwordValue == '' || confirmPasswordValue == ''){
+                   passwordMatch.style.display = 'none'; // Hide  message
+                     return;
+            }
+
+
+
+
+            if (passwordInput.value === confirmPasswordInput.value) {
+                passwordMatch.textContent = 'Passwords match!';
+                passwordMatch.className = 'match-message match';
+                  passwordMatch.style.display = 'block'; // Show match message
+            } else {
+                passwordMatch.textContent = 'Passwords do not match!';
+                passwordMatch.className = 'match-message not-match';
+                 passwordMatch.style.display = 'block'; // Show match message
+            }
+        }
+
+        // Prevent form submission if there are errors
+        signupForm.addEventListener('submit', function(event) {
+            if (phoneError.textContent) {
+                event.preventDefault(); // Prevent form submission
+                alert('Please correct the errors before submitting.');
+            }
+        });
+    });
+</script>
+{% endblock content %}

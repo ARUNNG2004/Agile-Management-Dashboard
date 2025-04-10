@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Project</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .form-control {
+            border-radius: 4px;
+        }
+        .dev-team-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .team-member-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px;
+        }
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+        .btn-cancel {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+        }
+        .btn-next, .btn-submit {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+        }
+        .btn-back {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+        }
+        .sprint-form, .story-form {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+        .sprint-controls, .story-controls {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h2 class="mb-0">Add New Project</h2>
+            </div>
+            <div class="card-body">
+                <form id="projectForm" method="POST">
+                    <!-- Project Details Container -->
+                    <div class="project-details-container" id="projectDetailsContainer">
+                        <div class="form-group">
+                            <label for="projectName">Project Name</label>
+                            <input type="text" class="form-control" id="projectName" name="projectName" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="projectDescription">Project Description</label>
+                            <textarea class="form-control" id="projectDescription" name="projectDescription" rows="3" required></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ProductOwner">Product Owner</label>
+                            <select id="ProductOwner" name="ProductOwner" required>
+                                <option value="" disabled selected>Select Product Owner</option>
+                                {% for user in product_owners %}
+                                    <option value="{{ user.name }}">{{ user.name }}</option>  <!-- Use user ID as value -->
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Development Team</label>
+                            <div class="owner-container">
+                                {% for user in developers %}
+                                    <label class="owner-option">
+                                        <input type="checkbox" name="devTeam" value="{{ user.name }}" /> {{ user.name }}
+                                    </label>
+                                {% endfor %}
+                                
+                            </div>
+                        </div>
+
+                        <!-- Replace the hidden status field with a visible select -->
+                        <div class="form-group">
+                            <label for="status">Project Status</label>
+                            <select class="form-control" id="status" name="status" required>
+                                <option value="pending">Pending</option>
+                                <option value="ongoing">Ongoing</option>
+                                <option value="completed">Completed</option>
+                                <option value="Not Started">Not Started</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="startDate">Start Date</label>
+                            <input type="date" class="form-control" id="startDate" name="startDate" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="endDate">End Date</label>
+                            <input type="date" class="form-control" id="endDate" name="endDate" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="revisedEndDate">Revised End Date</label>
+                            <input type="date" class="form-control" id="revisedEndDate" name="revisedEndDate">
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn-cancel" id="cancelBtn">Cancel</button>
+                            <button type="button" class="btn-next" id="nextBtn">
+                                Next: Sprint Setup <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Sprint Setup Container -->
+                    <div class="sprint-setup-container" id="sprintSetupContainer" style="display: none;">
+                        <div class="sprint-controls">
+                            <label for="sprintCount">Number of Sprints:</label>
+                            <input type="number" class="form-control" id="sprintCount" min="1" max="10" value="1">
+                            <button type="button" class="btn btn-primary mt-2" id="generateSprintsBtn">Generate Sprints</button>
+                        </div>
+
+                        <div id="sprintsContainer"></div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn-back" id="backToProjectBtn">
+                                <i class="fas fa-arrow-left"></i> Back
+                            </button>
+                            <button type="button" class="btn-next" id="nextToStoriesBtn">
+                                Next: User Stories <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- User Stories Container -->
+                    <div class="user-stories-container" id="userStoriesContainer" style="display: none;">
+                        <div class="story-controls">
+                            <label for="storyCount">Number of User Stories:</label>
+                            <input type="number" class="form-control" id="storyCount" min="1" max="20" value="1">
+                            <button type="button" class="btn btn-primary mt-2" id="generateStoriesBtn">Generate Stories</button>
+                        </div>
+
+                        <div id="storiesContainer"></div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn-back" id="backToSprintsBtn">
+                                <i class="fas fa-arrow-left"></i> Back
+                            </button>
+                            <button type="submit" class="btn-submit">
+                                Create Project <i class="fas fa-check"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        const scrumMastersData = {{ scrum_masters|tojson }};
+        console.log("Scrum Masters Data from Flask:", scrumMastersData);
+    </script> 
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="{{ url_for('static', filename='js/project_form.js') }}"></script>
+</body>
+</html>

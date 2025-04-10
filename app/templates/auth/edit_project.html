@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Project</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <div class="container">
+        <a href="{{ url_for('auth.dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+        <h1>Edit Project</h1>
+        <form method="post">
+            <div class="form-group">
+                <label for="projectName">Project Name</label>
+                <input type="text" class="form-control" id="projectName" name="projectName" value="{{ project.project_name }}" required>
+            </div>
+            <div class="form-group">
+                <label for="projectDescription">Project Description</label>
+                <textarea class="form-control" id="projectDescription" name="projectDescription" required>{{ project.project_description }}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="ProductOwner">Product Owner</label>
+                <select class="form-control" id="ProductOwner" name="ProductOwner" required>
+                    <option value="" disabled selected>Select Product Owner</option>
+                                {% for user in product_owners %}
+                                    <option value="{{ user.name }}">{{ user.name }}</option>  <!-- Use user ID as value -->
+                                {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Development Team</label>
+                <div class="owner-container">
+                    {% for user in developers %}
+                    <label class="owner-option">
+                        <input type="checkbox" name="devTeam" value="{{ user.name }}" /> {{ user.name }}
+                    </label>
+                {% endfor %}
+                    
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="startDate">Start Date</label>
+                <input type="date" class="form-control" id="startDate" name="startDate" value="{{ project.start_date.strftime('%Y-%m-%d') }}" required>
+            </div>
+            <div class="form-group">
+                <label for="endDate">End Date</label>
+                <input type="date" class="form-control" id="endDate" name="endDate" value="{{ project.end_date.strftime('%Y-%m-%d') }}" required>
+            </div>
+            <div class="form-group">
+                <label for="revisedEndDate">Revised End Date</label>
+                <input type="date" class="form-control" id="revisedEndDate" name="revisedEndDate" value="{{ project.revised_end_date.strftime('%Y-%m-%d') if project.revised_end_date else '' }}">
+            </div>
+            <div class="form-group">
+                <label for="status">Status</label>
+                <select class="form-control" id="status" name="status">
+                    <option value="Not Started" {% if project.status == 'Not Started' %}selected{% endif %}>Not Started</option>
+                    <option value="Ongoing" {% if project.status == 'Ongoing' %}selected{% endif %}>Ongoing</option>
+                    <option value="Completed" {% if project.status == 'Completed' %}selected{% endif %}>Completed</option>
+                    <option value="Pending" {% if project.status == 'Pending' %}selected{% endif %}>Pending</option>
+                </select>
+            </div>
+
+
+            <!-- <h2>Sprints</h2>
+            {% for sprint in project.sprints %}
+                <div class="sprint-form" data-sprint-number="{{ loop.index }}">
+                    <h4>Sprint {{ loop.index }}</h4>
+                    <div class="form-group">
+                        <label>Sprint Number</label>
+                        <input type="number" class="form-control" name="sprintNumber[]" value="{{ sprint.sprint_number }}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Scrum Master</label>
+                        <select class="form-control" name="sprintScrumMaster[]" required>
+                            <option value="" disabled>Select Scrum Master</option>
+                            {% for user in scrum_masters %}
+                            <option value="{{ user.name }}">{{ user.name }}</option>
+                        {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Start Date</label>
+                        <input type="date" class="form-control" name="sprintStartDate[]" value="{{ sprint.start_date.strftime('%Y-%m-%d') }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>End Date</label>
+                        <input type="date" class="form-control" name="sprintEndDate[]" value="{{ sprint.end_date.strftime('%Y-%m-%d') }}" required>
+                    </div>
+                </div>
+            {% endfor %}
+
+            <h2>User Stories</h2>
+            {% for story in project.user_stories %}
+                <div class="story-form">
+                    <h4>User Story {{ loop.index }}</h4>
+                    <input type="hidden" name="userStory[{{ loop.index }}][id]" value="{{ story.id }}">
+                    <div class="form-group">
+                        <label>Team</label>
+                        <select class="form-control" name="userStory[{{ loop.index }}][team]" required>
+                            <option value="" disabled>Select Team</option>
+                            <option value="Team1" {% if story.team == 'Team1' %}selected{% endif %}>Team 1</option>
+                            <option value="Team2" {% if story.team == 'Team2' %}selected{% endif %}>Team 2</option>
+                            <option value="Team3" {% if story.team == 'Team3' %}selected{% endif %}>Team 3</option>
+                            <option value="Team4" {% if story.team == 'Team4' %}selected{% endif %}>Team 4</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>User Story Description</label>
+                        <textarea class="form-control" name="userStory[{{ loop.index }}][description]" rows="3" placeholder="As a [user], I want to [action] so that [benefit]" required>{{ story.description }}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Story Points</label>
+                        <select class="form-control" name="userStory[{{ loop.index }}][storyPoints]" required>
+                            <option value="1" {% if story.story_point == 1 %}selected{% endif %}>1</option>
+                            <option value="2" {% if story.story_point == 2 %}selected{% endif %}>2</option>
+                            <option value="3" {% if story.story_point == 3 %}selected{% endif %}>3</option>
+                            <option value="5" {% if story.story_point == 5 %}selected{% endif %}>5</option>
+                            <option value="8" {% if story.story_point == 8 %}selected{% endif %}>8</option>
+                            <option value="13" {% if story.story_point == 13 %}selected{% endif %}>13</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select class="form-control" name="userStory[{{ loop.index }}][status]" required>
+                            <option value="pending" {% if story.status == 'pending' %}selected{% endif %}>Pending</option>
+                            <option value="ongoing" {% if story.status == 'ongoing' %}selected{% endif %}>Ongoing</option>
+                            <option value="completed" {% if story.status == 'completed' %}selected{% endif %}>Completed</option>
+                            <option value="Not Started" {% if story.status == 'Not Started' %}selected{% endif %}>Not Started</option>
+                        </select>
+                        <input type="hidden" name="userStory[{{ loop.index }}][sprint]" value="{{ story.sprint_id }}">
+                    </div>
+                </div>
+            {% endfor %} -->
+
+            <button type="submit" class="btn btn-primary">Update Project</button>
+            <a href="{{ url_for('auth.dashboard') }}" class="btn btn-secondary">Cancel</a>
+        </form>
+
+    </div>
+
+</body>
+</html>

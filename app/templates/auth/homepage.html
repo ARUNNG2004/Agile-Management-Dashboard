@@ -1,0 +1,267 @@
+{% extends 'base.html' %}
+{%block head%}
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        body {
+            background: #f4f9f9;
+            color: #333;
+            text-align: center;
+            overflow-x: hidden;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: linear-gradient(135deg, #6a0572, #d12d81);
+            color: white;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        .logo {
+            font-size: 26px;
+            font-weight: bold;
+        }
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 25px;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            transition: 0.3s;
+        }
+        nav a:hover {
+            color: #fdbb2d;
+            transform: scale(1.1);
+        }
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+            /* background: linear-gradient(135deg, rgba(106, 5, 114, 0.8), rgba(209, 45, 129, 0.8)) ,url("{{ url_for('static', filename='hero.avif') }}") repeat; */
+            color: white;
+            padding: 0 20px;
+        }
+        .hero img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1; /* Place the image behind the content */
+        }
+    
+        .hero h1 {
+            font-size: 60px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        .hero p {
+            font-size: 22px;
+            margin-bottom: 30px;
+        }
+        .cta-button {
+            background: #fdbb2d;
+            padding: 15px 40px;
+            font-size: 18px;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+            border-radius: 8px;
+            color: #333;
+            font-weight: bold;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        .cta-button:hover {
+            background: #ffa500;
+            transform: scale(1.1);
+        }
+        .features {
+            padding: 80px 10%;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            background: #ffffff;
+        }
+        .feature-box {
+            width: 320px;
+            padding: 30px;
+            border-radius: 15px;
+            background: pink;
+            transition: all 0.3s ease;
+            color: #333;
+            text-align: center;
+            box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.2);
+        }
+        .feature-box:hover {
+            transform: translateY(-10px);
+            background: #fd2db8;
+        }
+        .contact {
+            padding: 60px 20px;
+            background: linear-gradient(135deg, #6a0572, #d12d81);
+            color: white;
+        }
+        footer {
+            padding: 20px;
+            background: #50034a;
+            color: white;
+            text-align: center;
+        }
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 40px;
+            }
+            .hero p {
+                font-size: 18px;
+            }
+            .cta-button {
+                font-size: 16px;
+                padding: 12px 24px;
+            }
+            .feature-box {
+                width: 100%;
+            }
+        }
+        .popup-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .popup-button {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid #6a0572;
+        }
+        .popup-button:hover {
+            background: #6a0572;
+            color: white;
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+            width: 80%;
+            max-width: 500px;
+            z-index: 2000;
+        }
+        .popup-content {
+            font-size: 18px;
+            color: #333;
+        }
+        .close-popup {
+            background: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+    </style>
+{%endblock head%}
+{%block content%}
+<script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
+    <header>
+        <h1 class="logo">Agile Dashboard</h1>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('auth.signup') }}">Sign Up</a></li>
+                <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <section class="hero">
+        <img src="{{ url_for('static', filename='hero.avif') }}" alt="Background Image" >
+        <h1>Elevate Your Agile Management</h1>
+        <p>Stay ahead with a streamlined dashboard designed for seamless collaboration.</p>
+        <a href="{{ url_for('auth.login') }}" class="cta-button">Get Started</a>
+        <div style="margin-top: 40px;"></div>
+        <div class="popup-container">
+            <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 15px;">
+                <button class="popup-button" onclick="showPopup('Automated Task Management', 'Automated Task Management in Agile helps teams streamline workflows, assign tasks dynamically, and track progress efficiently. It improves productivity by reducing manual overhead and ensuring tasks are completed on time.')">🚀 Automated Task Management</button>
+                <button class="popup-button" onclick="showPopup('Real-Time Analytics & Insights', 'Real-time analytics in Agile provides instant visibility into project status, team performance, and bottlenecks. This enables data-driven decision-making and enhances efficiency.')">📊 Real-Time Analytics & Insights</button>
+            </div>
+            <div style="display: flex; justify-content: center; align-items: center;">
+                <button class="popup-button" onclick="showPopup('End-to-End Security', 'End-to-end security in Agile protects project data, user credentials, and communications. It ensures compliance with industry standards, safeguarding against cyber threats.')">🔐 End-to-End Security</button>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 15px;">
+                <button class="popup-button" onclick="showPopup('Multi-User Collaboration', 'Multi-user collaboration in Agile enables team members to work simultaneously, share updates, and stay aligned. It fosters transparency and boosts teamwork.')">🌍 Multi-User Collaboration</button>
+                <button class="popup-button" onclick="showPopup('Smart Scheduling & Planning', 'Smart scheduling in Agile helps teams prioritize tasks, manage deadlines, and optimize resource allocation for maximum efficiency.')">📅 Smart Scheduling & Planning</button>
+            </div>
+        </div>
+    </section>
+    <section id="features" class="features">
+        <div class="feature-box"><p>🚀 Automated Task Management</p></div>
+        <div class="feature-box"><p>📊 Real-Time Analytics & Insights</p></div>
+        <div class="feature-box"><p>🔐 End-to-End Security</p></div>
+        <div class="feature-box"><p>🌍 Multi-User Collaboration</p></div>
+        <div class="feature-box"><p>📅 Smart Scheduling & Planning</p></div>
+    </section>
+
+    <section id="contact" class="contact">
+        <h2>Contact Us</h2>
+        <p>Email: support@agiledashboard.com</p>
+        <p>Phone: +123 456 7890</p>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 Agile Management Dashboard. All Rights Reserved.</p>
+    </footer>
+
+    <div id="popup" class="popup">
+        <p class="popup-content" id="popup-text"></p>
+        <button class="close-popup" onclick="closePopup()">Close</button>
+    </div>
+
+    <script>
+        
+        function showPopup(title, content) {
+            document.getElementById('popup-text').innerHTML = `<strong>${title}</strong><br>${content}`;
+            document.getElementById('popup').style.display = 'block';
+        }
+        function closePopup() {
+            document.getElementById('popup').style.display = 'none';
+        }
+        // Close popup when clicking outside of it
+        window.addEventListener('click', function(event) {
+            const popup = document.getElementById('popup');
+            if (event.target === popup) {
+                closePopup();
+            }
+        });
+    </script>
+{%endblock content%}

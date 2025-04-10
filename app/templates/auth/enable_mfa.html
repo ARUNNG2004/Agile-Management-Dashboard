@@ -1,0 +1,494 @@
+{% extends 'base.html' %}
+{% block head %}
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+  :root {
+    --primary: #6e45e2;
+    --secondary: #88d3ce;
+    --accent: #ff7c7c;
+    --dark: #0f0f1b;
+    --light: rgba(255, 255, 255, 0.95);
+    --glass: rgba(255, 255, 255, 0.1);
+    --glass-border: rgba(255, 255, 255, 0.2);
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background: linear-gradient(135deg, #0f0f1b, #693965);
+    color: var(--light);
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background:
+      radial-gradient(circle at 15% 25%, rgba(110, 69, 226, 0.25) 0%, transparent 30%),
+      radial-gradient(circle at 85% 75%, rgba(255, 124, 124, 0.25) 0%, transparent 30%);
+    z-index: -2;
+    animation: pulse 12s ease infinite alternate;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 0.9; transform: scale(1.02); }
+    100% { opacity: 0.6; transform: scale(1); }
+  }
+
+  .container {
+    background: var(--glass);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 24px;
+    box-shadow:
+      0 12px 40px rgba(0, 0, 0, 0.3),
+      inset 0 4px 12px rgba(255, 255, 255, 0.08);
+    padding: 48px;
+    width: 100%;
+    max-width: 480px;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    border: 1px solid var(--glass-border);
+    transform-style: preserve-3d;
+    perspective: 1000px;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  .container:hover {
+    transform: translateY(-8px);
+    box-shadow:
+      0 16px 48px rgba(0, 0, 0, 0.4),
+      inset 0 4px 12px rgba(255, 255, 255, 0.12);
+  }
+
+  .container::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background:
+      linear-gradient(45deg, transparent 65%, rgba(255, 124, 124, 0.1) 65%),
+      linear-gradient(-45deg, transparent 65%, rgba(110, 69, 226, 0.1) 65%);
+    background-size: 80px 80px;
+    animation: animate 25s linear infinite;
+    z-index: -1;
+    opacity: 0.6;
+  }
+
+  @keyframes animate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .container h1 {
+    text-align: center;
+    margin-bottom: 40px;
+    font-weight: 600;
+    font-size: 36px;
+    color: white;
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    letter-spacing: 0.5px;
+  }
+
+  .container h1::after {
+    content: '';
+    position: absolute;
+    bottom: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(to right, var(--primary), var(--accent));
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(110, 69, 226, 0.4);
+  }
+
+  .form-control {
+    position: relative;
+    margin: 32px 0;
+  }
+
+  .form-control input {
+    width: 100%;
+    padding: 20px 24px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 2px solid var(--glass-border);
+    border-radius: 14px;
+    color: white;
+    font-size: 16px;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    letter-spacing: 0.5px;
+  }
+
+  .form-control input:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  }
+
+  .form-control input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .form-control label {
+    position: absolute;
+    left: 24px;
+    top: 20px;
+    color: rgba(255, 255, 255, 0.7);
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 16px;
+    letter-spacing: 0.5px;
+  }
+
+  .form-control input:focus + label,
+  .form-control input:not(:placeholder-shown) + label {
+    transform: translateY(-36px) scale(0.9);
+    color: var(--accent);
+    background: linear-gradient(to right, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    padding: 0 8px;
+    font-weight: 500;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 20px;
+    background: linear-gradient(45deg, var(--primary), var(--accent));
+    border: none;
+    border-radius: 14px;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 8px 24px rgba(110, 69, 226, 0.3);
+    margin-top: 24px;
+    position: relative;
+    overflow: hidden;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: all 0.8s ease;
+  }
+
+  .btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(110, 69, 226, 0.4);
+  }
+
+  .btn:hover::before {
+    left: 100%;
+  }
+
+  .btn:active {
+    transform: translateY(0);
+  }
+
+  .links {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 28px;
+    font-size: 14px;
+  }
+
+  .links a {
+    color: rgba(219, 204, 204, 0.7);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    position: relative;
+    padding: 4px 0;
+    letter-spacing: 0.5px;
+  }
+
+  .links a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(to right, var(--primary), var(--accent));
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .links a:hover {
+    color: white;
+  }
+
+  .links a:hover::after {
+    width: 100%;
+  }
+
+  .text {
+    text-align: center;
+    margin-top: 32px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .text a {
+    color: white;
+    font-weight: 600;
+    text-decoration: none;
+    background: linear-gradient(to right, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    position: relative;
+    padding-bottom: 2px;
+  }
+
+  .text a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(to right, var(--primary), var(--accent));
+    transition: all 0.3s ease;
+    transform-origin: left;
+    transform: scaleX(0);
+  }
+
+  .text a:hover::after {
+    transform: scaleX(1);
+  }
+
+  .alert {
+    padding: 18px 28px;
+    margin-bottom: 28px;
+    border-radius: 14px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+    animation: slideIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    letter-spacing: 0.5px;
+  }
+
+  @keyframes slideIn {
+    from { transform: translateY(-30px) scale(0.95); opacity: 0; }
+    to { transform: translateY(0) scale(1); opacity: 1; }
+  }
+
+  .alert-success {
+    background: rgba(40, 167, 69, 0.25);
+    color: #d4edda;
+    border-color: rgba(40, 167, 69, 0.4);
+  }
+
+  .alert-danger {
+    background: rgba(220, 53, 69, 0.25);
+    color: #f8d7da;
+    border-color: rgba(220, 53, 69, 0.4);
+  }
+
+  .alert-warning {
+    background: rgba(255, 193, 7, 0.25);
+    color: #fff3cd;
+    border-color: rgba(255, 193, 7, 0.4);
+  }
+
+  .particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -3;
+    overflow: hidden;
+  }
+
+  .particle {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
+    animation: float linear infinite;
+    filter: blur(1px);
+  }
+
+  @keyframes float {
+    0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
+  }
+
+  /* Floating orb decorations */
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(40px);
+    opacity: 0.6;
+    z-index: -2;
+    animation: drift linear infinite;
+  }
+
+  .orb-1 {
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, var(--primary), transparent 70%);
+    top: -100px;
+    left: -100px;
+    animation-duration: 20s;
+  }
+
+  .orb-2 {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, var(--accent), transparent 70%);
+    bottom: -150px;
+    right: -100px;
+    animation-duration: 25s;
+  }
+
+  @keyframes drift {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    25% { transform: translate(50px, 50px) rotate(90deg); }
+    50% { transform: translate(0, 100px) rotate(180deg); }
+    75% { transform: translate(-50px, 50px) rotate(270deg); }
+    100% { transform: translate(0, 0) rotate(360deg); }
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 600px) {
+    .container {
+      padding: 32px;
+      max-width: 90%;
+      border-radius: 20px;
+    }
+
+    .container h1 {
+      font-size: 28px;
+      margin-bottom: 32px;
+    }
+
+    .form-control input {
+      padding: 16px 20px;
+    }
+
+    .btn {
+      padding: 16px;
+    }
+  }
+</style>
+{% endblock head %}
+
+{% block content %}
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="particles" id="particles-js"></div>
+
+<div class="container">  
+    <div class="row d-flex justify-content-center">
+        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+        {% with messages=get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category,message in messages %}
+        <div class="alert alert-{{category}}">
+            <strong>{{message}}</strong>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+    <h1>Verify Your 2FA Code</h1>  
+    {% if not mfa_setup_complete  %}
+    <p>Scan the QR code below with your authenticator app (e.g., Google Authenticator):</p>
+    <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code for {{ email }}" class="img-fluid" style="max-width: 250px;">
+    {% endif %}
+    <form action="{{ url_for('auth.verify_mfa') }}" method="post">  
+     <div class="form-control">  
+      <input type="text" placeholder="Enter otp" name="otp" value="{{ request.form.get('otp','') }}" autocomplete="off" required>  
+     
+         </div>  
+
+     <button class="btn">Submit</button>  
+
+    </form>  
+   </div>  
+
+
+    
+
+    
+
+   
+  
+
+
+</div>
+
+<script>
+  // Create floating particles
+  document.addEventListener('DOMContentLoaded', function() {
+    const particles = document.getElementById('particles-js');
+    const particleCount = window.innerWidth < 600 ? 20 : 40;
+
+    for (let i = 0; i < particleCount; i++) {
+      const particle = document.createElement('div');
+      particle.classList.add('particle');
+
+      // Random properties
+      const size = Math.random() * 6 + 2;
+      const posX = Math.random() * 100;
+      const delay = Math.random() * 15;
+      const duration = Math.random() * 25 + 15;
+      const opacity = Math.random() * 0.6 + 0.2;
+
+      particle.style.width = ${size}px;
+      particle.style.height = ${size}px;
+      particle.style.left = ${posX}%;
+      particle.style.animationDelay = ${delay}s;
+      particle.style.animationDuration = ${duration}s;
+      particle.style.opacity = opacity;
+
+      // Random color
+      const colors = ['rgba(255, 255, 255, 0.8)', 'rgba(110, 69, 226, 0.6)', 'rgba(255, 124, 124, 0.6)'];
+      particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+
+      particles.appendChild(particle);
+    }
+  });
+</script>
+{% endblock content %}

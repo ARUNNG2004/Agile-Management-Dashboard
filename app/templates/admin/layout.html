@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% if title %}
+    <title>{{title}} - Agile Dashboard</title>
+    {% else %}
+    <title>Agile Dashboard</title>
+    {% endif %}
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    {% block head %}{% endblock head %}
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+    <!-- Main content area -->
+    <main class="flex-grow-1">
+        {% if not request.path.startswith('/admin') %}
+        <div class="container my-2">
+            <div class="my-2 text-center">
+                {% if session.admin_name %}
+                <button class="btn btn-success">{{session.admin_name}}</button>
+                {% endif %}
+            </div>
+            <hr>
+        </div>
+        {% endif %}
+
+        {% block content %}{% endblock content %}
+    </main>
+
+    <!-- Bootstrap JS (with Popper.js) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ project.project_name }} - Project Summary</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Add jsPDF and html2canvas libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        .summary-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        .styled-button {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .styled-button:hover {
+            background-color: #0056b3;
+        }
+
+        @media print {
+            .no-export {
+                display: none !important;
+            }
+        }
+        .summary-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .summary-section {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+        .summary-section h3 {
+            color: #007bff;
+            margin-bottom: 0.5rem;
+        }
+        .team-list {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        .team-member {
+            padding: 0.5rem;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .completion-status {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .completion-bar {
+            flex-grow: 1;
+            height: 20px;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .completion-value {
+            height: 100%;
+            background-color: #28a745;
+            transition: width 0.3s;
+        }
+        .metrics-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-weight: bold;
+            color: white;
+        }
+        .status-active {
+            background-color: #28a745;
+        }
+        .status-paused {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        .status-completed {
+            background-color: #6c757d;
+        }
+        .status-planning {
+            background-color: #17a2b8;
+        }
+        .metrics-box {
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            padding: 1rem;
+        }
+        .metrics-box h3 {
+            color: #007bff;
+            margin-bottom: 0.5rem;
+        }
+        .metrics-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            border-bottom: 1px solid #e9ecef;
+            padding-bottom: 0.5rem;
+        }
+        .metrics-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        .metrics-label {
+            font-weight: bold;
+        }
+        .metrics-value {
+            text-align: right;
+        }
+        .story-progress-container {
+            padding: 1rem;
+        }
+
+        .story-status-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .status-box {
+            background-color: white;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .status-box h4 {
+            margin: 0;
+            color: #495057;
+            font-size: 0.9rem;
+        }
+
+        .status-count {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #007bff;
+            margin-top: 0.5rem;
+        }
+
+        .story-progress-bar {
+            margin: 1.5rem 0;
+        }
+
+        .story-points-summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .story-points-summary p {
+            margin: 0;
+            padding: 0.5rem;
+            background-color: white;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="summary-container">
+      <div class="button-container no-export">
+            {% if not is_pdf %}
+            <a href="{{ url_for('main.view_project', project_id=project.project_id) }}" class="styled-button">Back to Project</a>
+           
+            <button id="exportPdf" class="styled-button">Download PDF</button>
+            {%endif%}
+        </div>
+
+
+        <div class="summary-header">
+            <h1>{{ project.project_name }}</h1>
+            <p>Project Overview Summary</p>
+        </div>
+
+        <div class="summary-section">
+            <h3>Project Details</h3>
+            <p><strong>Description:</strong> {{ project.project_description }}</p>
+            <p><strong>Product Owner:</strong> {{ project.product_owner }}</p>
+            <p><strong>Current Status:</strong> <span class="status-badge status-{{ project.status.lower() }}">{{ project.status }}</span></p>
+        </div>
+
+        <div class="summary-section">
+            <h3>Timeline</h3>
+            <p><strong>Start Date:</strong> {{ project.start_date.strftime('%Y-%m-%d') }}</p>
+            <p><strong>End Date:</strong> {{ project.end_date.strftime('%Y-%m-%d') }}</p>
+            {% if project.revised_end_date %}
+            <p><strong>Revised End Date:</strong> {{ project.revised_end_date.strftime('%Y-%m-%d') }}</p>
+            {% endif %}
+        </div>
+
+        <div class="summary-section">
+            <h3>Team Members</h3>
+            <ul class="team-list">
+                {% for member in project.development_team %}
+                <li class="team-member">{{ member }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="metrics-container">
+            <div class="metrics-box">
+                <h3>Project Metrics</h3>
+                <div class="metrics-item">
+                    <div class="metrics-label">Total Stories</div>
+                    <div class="metrics-value">{{ project_stats.total_stories|default(0) }}</div>
+                </div>
+                <div class="metrics-item">
+                    <div class="metrics-label">Completed Stories</div>
+                    <div class="metrics-value">{{ project_stats.completed_stories|default(0) }}</div>
+                </div>
+                <div class="metrics-item">
+                    <div class="metrics-label">Completion Rate</div>
+                    <div class="metrics-value">{{ "%.2f"|format(project_stats.completion_percentage|default(0)) }}%</div>
+                </div>
+                <div class="metrics-item">
+                    <div class="metrics-label">Total Points</div>
+                    <div class="metrics-value">{{ project_stats.total_points|default(0) }}</div>
+                </div>
+                <div class="metrics-item">
+                    <div class="metrics-label">Completed Points</div>
+                    <div class="metrics-value">{{ project_stats.completed_points|default(0) }}</div>
+                </div>
+            </div>
+
+            <div class="metrics-box">
+                <h3>Sprint Metrics</h3>
+                <div class="metrics-item">
+                    <div class="metrics-label">Total Sprints</div>
+                    <div class="metrics-value">{{ total_sprints|default(0) }}</div>
+                </div>
+                <div class="metrics-item">
+                    <div class="metrics-label">Current Sprint</div>
+                    <div class="metrics-value">{{ current_sprint|default('None') }}</div>
+                </div>
+                <div class="metrics-item">
+                    <div class="metrics-label">Average Velocity</div>
+                    <div class="metrics-value">{{ "%.1f"|format(average_velocity|default(0)) }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="summary-section">
+            <h3>User Story Progress</h3>
+            <div class="story-progress-container">
+                <div class="story-status-grid">
+                    <div class="status-box">
+                        <h4>Not Started</h4>
+                        <div class="status-count">
+                            {{ user_stories|selectattr('status', 'equalto', 'Not Started')|list|length }}
+                        </div>
+                    </div>
+                    <div class="status-box">
+                        <h4>In Progress</h4>
+                        <div class="status-count">
+                            {{ user_stories|selectattr('status', 'equalto', 'pending')|list|length }}
+                        </div>
+                    </div>
+                    <div class="status-box">
+                        <h4>Completed</h4>
+                        <div class="status-count">
+                            {{ user_stories|selectattr('status', 'equalto', 'completed')|list|length }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="story-progress-bar">
+                    <div class="progress" style="height: 25px;">
+                        <div class="progress-bar bg-success" role="progressbar"
+                             style="width: {{ project_stats.completion_percentage }}%"
+                             aria-valuenow="{{ project_stats.completion_percentage }}"
+                             aria-valuemin="0"
+                             aria-valuemax="100">
+                            {{ "%.1f"|format(project_stats.completion_percentage) }}%
+                        </div>
+                    </div>
+                </div>
+
+                <div class="story-points-summary">
+                    <p><strong>Total Story Points:</strong> {{ project_stats.total_points }}</p>
+                    <p><strong>Completed Points:</strong> {{ project_stats.completed_points }}</p>
+                    <p><strong>Remaining Points:</strong> {{ project_stats.total_points - project_stats.completed_points }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Original download functionality (kept for compatibility)
+
+        // Duplicate export functionality (added as requested)
+        const exportBtn = document.getElementById('exportPdf');
+        if (exportBtn) {
+            exportBtn.addEventListener('click', function() {
+                generatePDF('{{ project.project_name }} - Project Summary.pdf');
+            });
+        }
+
+        function generatePDF(filename) {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+            // Hide elements that shouldn't be in the PDF
+            const noExportElements = document.querySelectorAll('.no-export');
+            noExportElements.forEach(el => {
+                el.style.visibility = 'hidden';
+                el.style.position = 'absolute';
+            });
+
+            // First capture the header
+            const header = document.querySelector('.summary-header');
+
+            // Then capture all sections including metrics and story progress
+            const sections = [
+                header,
+                ...document.querySelectorAll('.summary-section, .metrics-container')
+            ];
+
+            let yOffset = 10;
+
+            function captureSection(index) {
+                if (index >= sections.length) {
+                    pdf.save(filename);
+                    // Restore visibility of elements
+                    noExportElements.forEach(el => {
+                        el.style.visibility = '';
+                        el.style.position = '';
+                    });
+                    return;
+                }
+
+                html2canvas(sections[index], {
+                    scale: 2,
+                    logging: false,
+                    useCORS: true,
+                    backgroundColor: '#FFFFFF'
+                }).then(canvas => {
+                    const imgData = canvas.toDataURL('image/png');
+                    const imgWidth = 190; // Slightly less than A4 width
+                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+                    // Add a new page if this section won't fit
+                    if (yOffset + imgHeight > 280) {
+                        pdf.addPage();
+                        yOffset = 10;
+                    }
+
+                    pdf.addImage(imgData, 'PNG', 10, yOffset, imgWidth, imgHeight);
+                    yOffset += imgHeight + 10; // Adding space between sections
+
+                    captureSection(index + 1);
+                });
+            }
+
+            captureSection(0);
+        }
+    });
+    </script>
+</body>
+</html>

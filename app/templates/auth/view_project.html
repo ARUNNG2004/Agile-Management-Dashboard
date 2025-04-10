@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ project.project_name }} - Project Details</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    <div class="button-container">
+        <a href="{{ url_for('auth.dashboard') }}" class="styled-button">BACK</a>
+        <a href="{{ url_for('main.summary', project_id=project.project_id) }}" class="styled-button view-summary-button">View Summary</a>
+    </div>
+
+    <div class="project-info">
+        <div class="project-header">
+            <h1>{{ project.project_name }}</h1>
+            <span class="status-badge status-{{ project.status.lower().replace(' ', '-') }}">{{ project.status }}</span>
+        </div>
+        <p><strong>Product Owner:</strong> {{ project.product_owner }}</p>
+        <p><strong>Duration:</strong> {{ project.start_date.strftime('%Y-%m-%d') }} to {{ project.end_date.strftime('%Y-%m-%d') }}</p>
+        {% if project.revised_end_date %}
+        <p><strong>Revised End Date:</strong> {{ project.revised_end_date.strftime('%Y-%m-%d') }}</p>
+        {% endif %}
+    </div>
+
+    <div class="project-stats">
+        <div class="stat-card">
+            <h4>{{ project_stats.total_stories }}</h4>
+            <p>Total Stories</p>
+        </div>
+        <div class="stat-card">
+            <h4>{{ project_stats.completed_stories }}</h4>
+            <p>Completed Stories</p>
+        </div>
+        <div class="stat-card">
+            <h4>{{ "%.1f"|format(project_stats.completion_percentage) }}%</h4>
+            <p>Completion Rate</p>
+        </div>
+        <div class="stat-card">
+            <h4>{{ project_stats.total_points }}</h4>
+            <p>Total Story Points</p>
+        </div>
+    </div>
+
+
+    <h2>Sprint Calendar</h2>
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Sprint No</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Total Velocity</th>
+                    <th>Status</th> 
+                    <th>Completion</th> 
+                </tr>
+            </thead>
+            <tbody>
+                {% for sprint in sprint_details %}
+                <tr>
+                    <td>Sprint {{ sprint.sprint_no }}</td>
+                    <td>{{ sprint.start_date }}</td>
+                    <td>{{ sprint.end_date }}</td>
+                    <td>{{ sprint.velocity }}</td>
+                    <td>{{ sprint.status }}</td>
+                    <td>
+                        <div class="progress">
+                            <div class="progress-bar"
+                                 role="progressbar"
+                                 aria-valuenow="{{ sprint.completion_rate }}"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100"
+                                 style="width: {{ sprint.completion_rate }}%">
+                                {{ "%.1f"|format(sprint.completion_rate) }}%
+                            </div>
+                        </div>
+                    </td> 
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <h2>User Stories Overview</h2>
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>S.NO</th>
+                    <th>Sprint</th>
+                    <th>Description</th>                  
+                    <th>Assigned Team</th>
+                    <th>Status</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                {% for story in user_story_overview %}
+                <tr>
+                    <td>{{ story.s_no }}</td>
+                    <td>{{ story.sprint }}</td>
+                    <td>{{ story.description }}</td>                                                  
+                    <td>{{ story.assigned_team }}</td>
+                    <td>{{ story.status }}</td>      
+                   
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+    
+    <h2>Project Analytics</h2>
+    <div class="charts">
+        <div class="chart-container">
+            <h3>Burnup Chart</h3>
+            <img src="data:image/png;base64,{{ burnup_chart_url }}" alt="Burnup Chart">
+        </div>
+        <div class="chart-container">
+            <h3>Burndown Chart</h3>
+            <img src="data:image/png;base64,{{ burndown_chart_url }}" alt="Burndown Chart">
+        </div>
+        <div class="chart-container">
+            <h3>Sprint Velocity Chart</h3>
+            <img src="data:image/png;base64,{{ sprint_velocity_graph_url }}" alt="Sprint Velocity Chart">
+        </div>
+    </div>
+
+    <!-- <h2>Team Leaderboard</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Team </th>
+                <th>Story Points</th>
+                <th>Completed Points</th>
+                <th>Progress</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for member in leaderboard %}
+            <tr>
+                <td>
+                    {% if loop.index == 1 %}
+                        🥇
+                    {% elif loop.index == 2 %}
+                        🥈
+                    {% elif loop.index == 3 %}
+                        🥉
+                    {% endif %}
+                    {{ member.name }}
+                </td>
+                <td>{{ member.total_points }}</td>
+                <td>{{ member.completed_points }}</td>
+                <td>
+                    <div class="progress">
+                        <div class="progress-bar"
+                             role="progressbar"
+                             aria-valuenow="{{ (member.completed_stories / member.total_stories * 100)|round(1) }}"
+                             aria-valuemin="0"
+                             aria-valuemax="100"
+                             style="width: {{ (member.completed_stories / member.total_stories * 100)|round(1) }}%">
+                            {{ (member.completed_stories / member.total_stories * 100)|round(1) }}%
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <button class="refresh-btn">
+        <i class="fas fa-sync"></i>
+    </button>
+
+    <script>
+        // Auto-refresh every 30 seconds
+        setInterval(function() {
+            location.reload();
+        }, 30000);
+    </script>
+</body>
+</html> -->
+
+<h2>Team Leaderboard</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Rank</th>
+            <th>Team</th>
+            <th>Story Points</th>
+            <th>Completed Points</th>
+            <th>Progress</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for team in leaderboard %}
+        <tr>
+            <td>
+                {% if loop.index == 1 %}
+                    🥇
+                {% elif loop.index == 2 %}
+                    🥈
+                {% elif loop.index == 3 %}
+                    🥉
+                {% else %}
+                    {{ loop.index }}
+                {% endif %}
+            </td>
+            <td>{{ team.team }}</td>
+            <td>{{ team.total_points }}</td>
+            <td>{{ team.completed_points }}</td>
+            <td>
+                <div class="progress">
+                    <div class="progress-bar"
+                         role="progressbar"
+                         aria-valuenow="{{ team.progress }}"
+                         aria-valuemin="0"
+                         aria-valuemax="100"
+                         style="width: {{ team.progress }}%">
+                        {{ team.progress }}%
+                    </div>
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<button class="refresh-btn">
+    <i class="fas fa-sync"></i>
+</button>
+
+<script>
+    // Auto-refresh every 30 seconds
+    setInterval(function() {
+        location.reload();
+    }, 30000);
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+       /* CSS Reset */
+       body, h1, h2, h3, h4, h5, h6, p, ol, ul, input, button { /* Added input, button to reset */
+            margin: 0;
+            padding: 0;
+            font-weight: normal;
+            box-sizing: border-box; /* Better box model handling */
+        }
+        td{
+            font-size: 12px;
+        }
+
+        ol, ul {
+            list-style: none;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* General Body Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+          /* Beige: A warm, neutral color */
+            color: #333; /* Darker text for contrast */
+        }
+
+        /* Dashboard Container */
+        .dashboard-container {
+            width: 100%; /* Use more of the page */
+            max-width: 1400px; /* Maximum width */
+           background-color: #f4e9f0;
+           margin: 0%;
+           padding: 0%;
+            overflow: hidden; /* Ensure rounded corners are respected */
+        }
+
+        /* --- Table Header Section Modifications --- */
+        .table-header {
+            margin-bottom: 20px;
+            padding: 0 15px; /* Add padding to align with table content */
+        }
+
+        .header-actions {
+            display: flex;
+            justify-content: space-between; /* Positions items at ends */
+            align-items: center;
+            gap: 15px; /* Space between search and add button */
+            margin-bottom: 10px; /* Existing bottom margin */
+            padding: 10px 0; /* Add some vertical padding */
+         
+
+        }
+
+        /* NEW: Search Container Styles */
+        .search-container {
+            display: flex;
+            margin-left: -320px;
+            align-items: center;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            overflow: hidden; /* Keep button attached */
+            background-color: white; /* Background for the search input area */
+        }
+
+        .search-container input[type="text"] {
+            padding: 10px 15px;
+            border: none; /* Remove default border */
+            outline: none; /* Remove focus outline */
+            font-size: 0.9em;
+            min-width: 250px; /* Give it some initial width */
+            flex-grow: 1; /* Allow it to grow if space allows */
+        }
+
+        .search-container button {
+            padding: 10px 15px;
+            border: none; /* Remove default border */
+            background-color: #eee; /* Light gray background */
+            cursor: pointer;
+            color: #555; /* Icon color */
+            border-left: 1px solid #ccc; /* Separator line */
+            font-size: 0.9em;
+        }
+        .search-container button:hover {
+            background-color: #ddd;
+        }
+        /* --- End Table Header Modifications --- */
+
+        /* Dashboard Header */
+        .dashboard-header {
+            background-color: #d2b48c; /* Tan color for header, complements background */
+            color: white;
+            padding: 20px;
+            text-align: center;
+            /* Removed border-bottom to remove the line */
+        }
+
+        .dashboard-header h1 {
+            margin: 0;
+            font-size: 2em;
+        }
+
+        /* Modified Dashboard Content Layout */
+        .dashboard-content {
+            display: flex;
+            flex-direction: row; /* Items side by side */
+            justify-content: space-between;
+            padding: 20px;
+            gap: 5px; /* Space between chart and table */
+        }
+
+        /* Left Section - Chart */
+        .left-section {
+            flex: 0 0 25%; /* Take 40% of the width */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 50px;
+        }
+
+      /* Fix Chart Alignment */
+.chart-container {
+    width: 100%;
+    height: 300px;
+    max-width: 300px; /* Set a max width for better visibility */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* background-color: white; */
+    border-radius: 8px;
+    padding: 15px;
+    /* box-shadow: 0 2px 4px rgba(0,0,0,0.3); */
+}
+/* Advanced Search Bar Styles */
+.search-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 400px; /* Increased width for better usability */
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15); /* Adds slight shadow for depth */
+    overflow: hidden; /* Keeps elements within rounded corners */
+    transition: box-shadow 0.3s ease-in-out;
+}
+
+/* Style for the input field */
+.search-container input {
+    flex: 1;
+    padding: 12px 15px;
+    font-size: 0.95em;
+    border: none;
+    outline: none;
+    background: transparent;
+    min-width: 250px;
+    color: #333;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Placeholder styling */
+.search-container input::placeholder {
+    color: #888;
+    font-style: italic;
+}
+
+/* Button with search icon */
+.search-container button {
+    background: #007bff; /* Bootstrap primary blue */
+    color: white;
+    border: none;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out, transform 0.2s;
+    border-left: 1px solid #ddd; /* Separator line */
+}
+
+/* Search button hover effect */
+.search-container button:hover {
+    background: #0056b3; /* Darker blue */
+    transform: scale(1.05);
+}
+
+/* Search button active click effect */
+.search-container button:active {
+    transform: scale(0.95);
+}
+
+/* Icon inside button */
+.search-container button i {
+    font-size: 1.2em;
+}
+
+/* Search bar hover effect */
+.search-container:hover {
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2); /* Elevates on hover */
+}
+
+/* Mobile Responsive Fix */
+@media (max-width: 768px) {
+    .search-container {
+        max-width: 100%; /* Makes it full width on smaller screens */
+    }
+
+    .search-container input {
+        min-width: 180px; /* Reduce width for mobile */
+    }
+
+    .search-container button {
+        padding: 10px;
+    }
+}
+
+
+     /* Right Section - Table */
+.right-section {
+    flex: 0 0 75%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Table Container - Scrollable */
+.projects-table-container {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    overflow-y: auto; /* Enables vertical scrolling */
+    max-height: 450px; /* Limits height and enables scrolling */
+    border: 2px solid #333;
+    position: relative; /* Ensures header positioning works */;
+   margin: -10px;
+}
+
+/* Table Styling */
+.projects-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9em;
+    border: 2px solid #333;
+}
+
+/* Table Header - Stays Fixed */
+.projects-table thead {
+    position: sticky;
+    top: 0;
+    background-color: #333; /* Dark background for contrast */
+    color: white;
+    z-index: 10; /* Keeps header above other elements */
+}
+
+/* Table Header Cells */
+.projects-table th {
+    font-weight: bold;
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 2px solid #222;
+}
+
+/* Table Rows */
+.projects-table td {
+    padding: 12px 6px;
+    border: 2px solid #333;
+    color: #333;
+}
+
+/* Zebra striping for better readability */
+.projects-table tbody tr:nth-child(odd) {
+    background-color: #f0f0f0;
+}
+
+/* Hover effect for rows */
+.projects-table tbody tr:hover {
+    background-color: #ddd;
+    transition: background 0.3s ease-in-out;
+}
+
+/* Header Right Section */
+.header-right {
+    margin-right: 20px;
+}
+
+/* Statistics Container */
+.stats-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+/* Statistic Cards */
+.stat-card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    flex: 1;
+    border: 2px solid #333;
+}
+
+/* Responsive Fix */
+@media (max-width: 768px) {
+    .right-section {
+        flex: 0 0 100%;
+    }
+
+    .stats-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .projects-table-container {
+        max-height: 350px;
+    }
+}
+
+        .header-right {
+            margin-right: 20px; /* Space from right edge */
+        }
+
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        /* Status Badge Styles */
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            color: white;
+        }
+
+        .status-badge.not_started {
+            background: #FFD700; /* Yellow */
+        }
+
+        .status-badge.ongoing {
+            background: #4CAF50;  /* Green */
+        }
+
+        .status-badge.completed {
+            background: #2196F3;  /* Blue */
+        }
+
+        .status-badge.pending {
+            background: #dc3545;  /* Red */
+        }
+
+        /* Add status colors to table rows */
+        .status-not_started {
+            background-color: #FFFACD;  /* Light Yellow */
+        }
+
+        .status-ongoing {
+             background-color: #F0FFF0;  /* Light green */
+        }
+
+        .status-completed {
+             background-color: #E6E6FF;  /* Light blue */
+        }
+
+        .status-pending {
+              background-color: #FFE4E1;  /* Light red */
+        }
+
+        .status-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .auto-status-indicator {
+            color: #6c757d;
+            font-size: 0.8em;
+        }
+
+        /* Button Styles */
+        .btn-view,
+        .btn-edit {
+            padding: 8px 12px;
+            margin: 0 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+            font-size: 0.9em;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.2s ease; /* Add smooth hover effect */
+        }
+        .btn-view:hover,
+        .btn-edit:hover {
+            opacity: 0.85;
+        }
+
+
+        .btn-view {
+            background: #2196F3;
+        }
+
+        .btn-edit {
+            margin-top: 20px;
+
+
+            background: #FFA500;
+        }
+
+        /* Add Project Button */
+        .add-project-btn {
+            background-color: #e91e63; /* Bright pink */
+            color: white;
+            padding: 10px 20px; /* Adjusted padding slightly */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em; /* Maintain size */
+            transition: background-color 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+           margin-top: -10px; /* Prevent button text from wrapping */
+        }
+
+        .add-project-btn:hover {
+            background-color: #c2185b; /* Darken on hover */
+        }
+
+        /* Responsive design */
+        @media (max-width: 992px) {
+            .dashboard-content {
+                flex-direction: column;
+            }
+
+            .left-section, .right-section {
+                flex: 0 0 100%; /* Sections stack */
+            }
+
+            .header-actions {
+                flex-direction: column; /* Stack search and button on small screens */
+                align-items: stretch; /* Make items full width */
+            }
+             .search-container input[type="text"] {
+                min-width: 150px; /* Reduce min-width */
+            }
+
+        }
+        @media (max-width: 576px) {
+             .projects-table th,
+             .projects-table td {
+                 padding: 8px 10px; /* Reduce padding on very small screens */
+                 font-size: 0.85em;
+             }
+             .btn-view, .btn-edit {
+                padding: 6px 8px;
+                font-size: 0.8em;
+                margin: 0 3px;
+                margin-bottom: 5px;
+                gap: 2px;
+             }
+              .add-project-btn {
+                  padding: 8px 15px;
+                  font-size: 0.9em;
+              }
+        }
+    </style>
+
+</head>
+<body>
+
+    <div class="dashboard-container">
+        {% include 'auth/auth_navbar.html' %}
+
+        <div class="dashboard-content">
+            <!-- Left Section -->
+            <div class="left-section">
+                <!-- Left Section - Chart -->
+                <div class="left-section">
+                    <div class="chart-container">
+                        <canvas id="projectChart"></canvas>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <!-- Right Section -->
+            <div class="right-section">
+                <!-- Table Header contains Search and Add Button -->
+                <div class="table-header">
+                    <div class="header-actions">
+                         <!-- NEW: Search Input -->
+                         <div class="search-container">
+                            <input type="text" id="projectSearchInput" onkeyup="searchProjects()" placeholder="Search projects by name, description...">
+                             <button onclick="searchProjects()">
+                                 <i class="fas fa-search"></i>
+                             </button>
+                        </div>
+                        <!-- Existing Add Project Button -->
+                        <button class="add-project-btn" onclick="window.location.href='{{ url_for('main.add_project_page') }}'">
+                            <i class="fas fa-plus-circle"></i> Add new project
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Table Container -->
+                <div class="projects-table-container">
+                    <table class="projects-table" id="projectsTable">
+                        <thead>
+                            <tr>
+                                <th>Project ID</th>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Product Owner</th>
+                                <th>Status</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for project in projects %}
+                            {% set status_class = project.status.lower().replace(' ', '_') %}
+                            <tr class="status-{{ status_class }}">
+                                <td>{{ project.project_id }}</td>
+                                <td>{{ project.project_name }}</td>
+                                <td>{{ project.project_description }}</td>
+                                <td>{{ project.product_owner }}</td>
+                                <td>
+                                    <div class="status-container">
+                                        <span class="status-badge {{ status_class }}">
+                                            {{ project.status.title() }}
+                                        </span>
+                                        {% if project.auto_calculated %}
+                                        <span class="auto-status-indicator" title="Status automatically calculated">
+                                            <i class="fas fa-sync-alt"></i>
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td>{{ project.start_date.strftime('%Y-%m-%d') if project.start_date else 'N/A' }}</td>
+                                <td>{{ project.end_date.strftime('%Y-%m-%d') if project.end_date else 'N/A' }}</td>
+                                <td>
+                                    <a href="{{ url_for('main.view_project', project_id=project.project_id) }}" class="btn-view" title="View Project">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <!-- Changed edit button to link for consistency -->
+                                    <a href="{{ url_for('main.edit_project_page', project_id=project.project_id) }}" class="btn-edit" title="Edit Project">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <!-- You might need an 'edit_project_page' route -->
+                                    <!-- Original JS edit button kept for reference -->
+                                    <!-- <button onclick="editProject('{{ project.project_id }}');" class="btn-edit" title="Edit Project">
+                                        <i class="fas fa-edit"></i>
+                                    </button> -->
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="8" style="text-align: center; padding: 20px;">No projects found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize project chart
+        const ctx = document.getElementById('projectChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                // Use Python default filter if count is None or missing, fallback to 0
+                labels: ['Not Started', 'Ongoing', 'Completed', 'Pending/Delayed'],
+                datasets: [{
+                    data: [
+                        {{ not_started_count | default(0) }},
+                        {{ ongoing_count | default(0) }},
+                        {{ completed_count | default(0) }},
+                        {{ delayed_count | default(0) }} // Assuming delayed_count is used for Pending/Delayed status
+                    ],
+                    backgroundColor: ['#FFD700', '#4CAF50', '#2196F3', '#dc3545']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false, // Allow chart to adjust height better
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                         labels: {
+                            padding: 15 // Add some padding to legend items
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Project Status Distribution',
+                        padding: {
+                           top: 10,
+                           bottom: 15
+                        },
+                        font: {
+                           size: 16
+                        }
+                    },
+                     tooltip: { // Improve tooltip appearance
+                        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                        titleFont: { size: 14 },
+                        bodyFont: { size: 12 },
+                        padding: 10,
+                        cornerRadius: 4
+                    }
+                }
+            }
+        });
+
+        // Project actions - Edit (using direct link now, but function kept for potential future use)
+        function editProject(projectId) {
+            // Example: Redirecting to an edit page
+            window.location.href = `/project/${projectId}/edit`;
+            // Make sure you have a route like '/project/<int:project_id>/edit' in your Flask app
+             console.log("Attempting to edit project:", projectId); // Debug log
+             alert("Edit functionality placeholder for project ID: " + projectId);
+        }
+
+
+        // NEW: Basic Search/Filter Functionality
+        function searchProjects() {
+            const input = document.getElementById('projectSearchInput');
+            const filter = input.value.toUpperCase();
+            const table = document.getElementById('projectsTable');
+            const tbody = table.getElementsByTagName('tbody')[0];
+            const tr = tbody.getElementsByTagName('tr');
+            let found = false; // Flag to check if any rows match
+
+            // Loop through all table rows (in tbody), and hide those who don't match the search query
+            for (let i = 0; i < tr.length; i++) {
+                 // Skip if this row is the "No projects found" message
+                if (tr[i].getElementsByTagName("td").length > 1) {
+                    let rowText = tr[i].textContent || tr[i].innerText; // Get all text content from the row
+                    if (rowText.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = ""; // Show the row
+                         found = true;
+                    } else {
+                        tr[i].style.display = "none"; // Hide the row
+                    }
+                }
+            }
+             // Optional: Show a message if no results found - Create/show a specific row
+            // For simplicity, we'll just ensure the "No projects found" row is handled correctly
+             const noResultsRow = tbody.querySelector('td[colspan="8"]');
+             if (noResultsRow) {
+                 noResultsRow.parentElement.style.display = found ? 'none' : ''; // Show "No projects" if nothing found, hide otherwise
+             }
+
+        }
+    </script>
+
+</body>
+</html>
