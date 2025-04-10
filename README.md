@@ -1,16 +1,16 @@
-# 📊 Agile Management Dashboard
+# Agile Management Dashboard
 
 A centralized platform built to support Agile teams in managing projects, tracking tasks, and visualizing performance with clarity, automation, and role-based control.
 
 ---
 
-## 🚀 Project Overview
+## Project Overview
 
 The Agile Management Dashboard is designed to enhance team collaboration and project tracking in Agile environments. It helps users monitor ongoing projects, manage sprints, and analyze performance—all within a clean, interactive dashboard. It was done as a team of interns during our internship at Infosys Springboard 5.0.
 
 ---
 
-## 🧰 Tech Stack
+## Tech Stack
 
 - **Frontend**: React.js  
 - **Backend**: Node.js  
@@ -21,7 +21,7 @@ The Agile Management Dashboard is designed to enhance team collaboration and pro
 
 ---
 
-## ✅ Implemented Features
+## Implemented Features
 
 ### 🔐 Login and Role Management System
 - Home page for navigation and platform exploration
@@ -62,7 +62,7 @@ The Agile Management Dashboard is designed to enhance team collaboration and pro
 
 ---
 
-## 🎯 Agile Process Alignment
+## Agile Process Alignment
 
 Our dashboard supports and enhances key Agile practices:
 
@@ -81,7 +81,7 @@ Our dashboard supports and enhances key Agile practices:
 
 ---
 
-## 🌟 Benefits
+## Benefits
 
 - Encourages real-time collaboration and visibility  
 - Automates status updates and reporting  
@@ -91,7 +91,7 @@ Our dashboard supports and enhances key Agile practices:
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License.
 
