@@ -7,6 +7,7 @@ A centralized platform built to support Agile teams in managing projects, tracki
 ## 🚀 Project Overview
 
 The Agile Management Dashboard is designed to enhance team collaboration and project tracking in Agile environments. It helps users monitor ongoing projects, manage sprints, and analyze performance—all within a clean, interactive dashboard. It was done as a team of interns during our internship at Infosys Springboard 5.0.
+
 ---
 
 ## 🧰 Tech Stack
@@ -15,7 +16,7 @@ The Agile Management Dashboard is designed to enhance team collaboration and pro
 - **Backend**: Node.js  
 - **Database**: MongoDB  
 - **Styling/UI**: CSS  
-- **Authentication**: Multi-Factor Authentication  
+- **Authentication**: Multi-Factor Authentication 
 - **Email Services**: Nodemailer (for notifications & reporting)
 
 ---
