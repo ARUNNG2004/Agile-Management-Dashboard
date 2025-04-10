@@ -12,12 +12,14 @@ The Agile Management Dashboard is designed to enhance team collaboration and pro
 
 ## Tech Stack
 
-- **Frontend**: React.js  
-- **Backend**: Node.js  
-- **Database**: MongoDB  
-- **Styling/UI**: CSS  
-- **Authentication**: Multi-Factor Authentication 
-- **Email Services**: Nodemailer (for notifications & reporting)
+- **Frontend**: HTML, CSS, JavaScript
+- **Framework**: Flask 
+- **Backend**: Python
+- **Database**: sqlalchemy
+- **Visualization**: Matplotlib/Seaborn/Plotly 
+- **Authentication**: Multi-Factor Authentication (2FA)
+- **Testing**: Unit-test, Py-test
+- **Automation**: Scheduler
 
 ---
 
