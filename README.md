@@ -6,10 +6,7 @@ A centralized platform built to support Agile teams in managing projects, tracki
 
 ## 🚀 Project Overview
 
-The Agile Management Dashboard is designed to enhance team collaboration and project tracking in Agile environments. It helps users monitor ongoing projects, manage sprints, and analyze performance—all within a clean, interactive dashboard.
-
-> "The best way to predict the future is to create it." — Peter Drucker
-
+The Agile Management Dashboard is designed to enhance team collaboration and project tracking in Agile environments. It helps users monitor ongoing projects, manage sprints, and analyze performance—all within a clean, interactive dashboard. It was done as a team of interns during our internship at Infosys Springboard 5.0.
 ---
 
 ## 🧰 Tech Stack
@@ -90,20 +87,6 @@ Our dashboard supports and enhances key Agile practices:
 - Helps teams stay on schedule with proactive planning  
 - Boosts efficiency and motivation with clear performance analytics  
 - Supports continuous improvement via feedback-driven sprints  
-
----
-
-## 📸 UI Preview
-
-*Screenshots coming soon.*
-
----
-
-## 👥 Team Contribution
-
-- UI/UX Design & Frontend: [Add names]  
-- Backend & Database Integration: [Add names]  
-- Testing & Final Deployment: [Add names]
 
 ---
 
