@@ -17,7 +17,7 @@ The Agile Management Dashboard is designed to enhance team collaboration and pro
 - **Backend**: Python
 - **Database**: sqlalchemy
 - **Visualization**: Matplotlib/Seaborn/Plotly 
-- **Authentication**: Multi-Factor Authentication (2FA)
+- **Authentication**:Two-Factor Authentication(2FA), Multi-Factor Authentication (MFA)
 - **Testing**: Unit-test, Py-test
 - **Automation**: Scheduler
 
@@ -30,12 +30,13 @@ The Agile Management Dashboard is designed to enhance team collaboration and pro
 - Secure sign-up with admin review and approval flow
 - Admin dashboard to manage user requests
 - Real-time monitoring with account approval notifications
-- Login with forgot password and multi-factor authentication
+- Login with Two-Factor Authentication
+- Forgot Password with Multi-Factor Authentication
 
 ### 🆕 New Project Creation & Intimation
 - Pop-up form to create projects with fields like Project ID, Name, Description, Product Owner, Start/End Date, and Status
 - Sprint and User Story setup with story points
-- Email notifications sent to team members post-creation
+- Email notifications sent to team members post-creation of Project
 
 ### 📋 Project Overview Section
 - Displays all project details with status
